@@ -1,132 +1,114 @@
 # 🛰️ Satellite Land Cover Classifier
 
-A deep learning project that classifies land use and land cover 
-from satellite imagery using Convolutional Neural Networks (CNN) 
-with Grad-CAM explainability analysis.
+A deep learning project that automatically classifies land use 
+and land cover from satellite imagery using Transfer Learning 
+(ResNet18) with Grad-CAM explainability analysis.
 
 ---
 
 ## 🎯 Project Overview
 
 Satellites capture thousands of images of Earth every day. 
-Manually analyzing every image to understand land use — 
-forests, cities, farmland, rivers — is impossible at scale.
+Manually analyzing every image to understand land use is 
+impossible at scale. This project answers:
 
-This project answers one question:
+> **Can a deep learning model automatically classify satellite 
+> images — and explain which visual regions drove its decision?**
 
-> **Can a deep learning model automatically classify what's 
-> in a satellite image — and explain why it made that decision?**
+---
 
-Using the EuroSAT dataset of 27,000 real satellite images 
-across 10 land cover classes, this project builds an 
-end-to-end image classification pipeline with explainability.
+## 📊 Results
+
+| Metric | Score |
+|---|---|
+| Model | ResNet18 (Transfer Learning) |
+| Best Validation Accuracy | **85.51%** |
+| Training Epochs | 10 |
+| Dataset | EuroSAT (27,000 images, 10 classes) |
+
+### Training History
+![Training Curves](training_curves.png)
+
+### Per-Class Accuracy
+![Per Class Accuracy](per_class_accuracy.png)
+
+**Key findings:**
+- Forest and SeaLake achieved highest accuracy (>97%) — visually distinctive classes
+- AnnualCrop vs PermanentCrop and Pasture vs HerbaceousVegetation were hardest to separate — visually similar texture patterns
+- Transfer learning from ImageNet converged rapidly — 82% accuracy achieved in epoch 1
+
+---
+
+## 🔍 Explainability — Grad-CAM Analysis
+
+![Grad-CAM](gradcam_explainability.png)
+
+Grad-CAM (Gradient-weighted Class Activation Mapping) highlights 
+which regions of the satellite image the model focuses on when 
+making classification decisions — making the system transparent 
+and interpretable for real-world remote sensing applications.
 
 ---
 
 ## 🗺️ Dataset — EuroSAT
 
-- **Source:** EuroSAT — Sentinel-2 Satellite Imagery
+- **Source:** Sentinel-2 Satellite Imagery
 - **Total Images:** 27,000
 - **Classes:** 10 land cover types
-- **Image Size:** 64×64 pixels (RGB)
-- **Download:** [Kaggle EuroSAT Dataset](https://www.kaggle.com/datasets/apollo2506/eurosat-dataset)
+- **Image Size:** 64×64 pixels
 
-### Land Cover Classes
-
-| Class | Description |
-|---|---|
-| AnnualCrop | Seasonal farmland |
-| Forest | Dense tree coverage |
-| HerbaceousVegetation | Grasslands and shrubs |
-| Highway | Roads and transport corridors |
-| Industrial | Factories and warehouses |
-| Pasture | Open grazing land |
-| PermanentCrop | Orchards and vineyards |
-| Residential | Housing and neighborhoods |
-| River | Water channels |
-| SeaLake | Large water bodies |
-
----
-
-## 📊 Dataset Exploration
-
-### Sample Images — One Per Class
+### Sample Images
 ![Sample Images](sample_images.png)
 
 ### Class Distribution
 ![Class Distribution](class_distribution.png)
 
-> The dataset is slightly imbalanced — AnnualCrop has 3,007 
-> images while Pasture has only 2,000. This will be addressed 
-> during preprocessing.
-
 ---
 
 ## 🏗️ Project Pipeline
 
-| Stage | Status | Description |
+| Stage | Status | Result |
 |---|---|---|
-| Day 1 — Exploration | ✅ Done | Load dataset, visualize classes, analyze distribution |
-| Day 2 — Preprocessing | 🔄 In Progress | Normalize, augment, split train/val/test |
-| Day 3 — Model Training | ⬜ Upcoming | Train CNN classifier on 10 classes |
-| Day 4 — Evaluation | ⬜ Upcoming | Accuracy, confusion matrix, per-class metrics |
-| Day 5 — Explainability | ⬜ Upcoming | Grad-CAM visualization of model decisions |
-| Day 6 — README + Polish | ⬜ Upcoming | Full documentation and results |
+| Data Exploration | ✅ Done | 27,000 images across 10 classes |
+| Preprocessing | ✅ Done | Augmentation + normalization + 70/15/15 split |
+| Model Training | ✅ Done | ResNet18 transfer learning — 85.51% accuracy |
+| Explainability | ✅ Done | Grad-CAM highlighting key image regions |
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Python** — Core programming language
+- **Python** — Core language
 - **PyTorch** — Deep learning framework
-- **Torchvision** — Image transforms and pretrained models
-- **Matplotlib** — Visualization
-- **Grad-CAM** — Explainability analysis
+- **Torchvision** — ResNet18 pretrained model
+- **Grad-CAM** — Explainability visualization
 - **Google Colab** — GPU training environment
+- **Matplotlib** — Visualization
 
 ---
 
 ## 📁 Project Structure
+```
 satellite-land-cover-classifier/
-│
-├── day1_exploration.py       # Dataset exploration and visualization
-├── sample_images.png         # One sample per land cover class
-├── class_distribution.png    # Class frequency chart
-└── README.md                 # Project documentation
-
+├── day1_exploration.py         # Dataset exploration
+├── day2_preprocessing.py       # Data preprocessing pipeline
+├── day3_training.py            # Model training
+├── sample_images.png           # Class samples
+├── class_distribution.png      # Dataset statistics
+├── training_curves.png         # Training history
+├── per_class_accuracy.png      # Per-class results
+├── gradcam_explainability.png  # Explainability analysis
+└── README.md
+```
 ---
 
-## 🔍 Why Explainability Matters
+## 🔍 Research Significance
 
-Most satellite image classifiers are black boxes — they 
-output a class label without explaining which visual 
-features drove the decision.
+This project addresses two key challenges in remote sensing:
 
-This project adds **Grad-CAM (Gradient-weighted Class 
-Activation Mapping)** to highlight exactly which regions 
-of the satellite image the model focused on — making the 
-system transparent and trustworthy for real-world use.
+1. **Scale** — Manual satellite image analysis is impossible at scale. Automated classification enables monitoring of deforestation, urban expansion, and climate change at a global level.
 
-This directly addresses the interpretability gap identified 
-in remote sensing and Earth observation literature.
-
----
-
-## 🚀 How to Run
-
-**1. Open in Google Colab**
-
-**2. Mount Google Drive and set dataset path:**
-```python
-from google.colab import drive
-drive.mount('/content/drive')
-dataset_path = '/content/drive/MyDrive/satellite-project/EuroSAT'
-```
-
-**3. Run exploration:**
-```python
-!python day1_exploration.py
-```
+2. **Interpretability** — Most satellite classifiers are black boxes. Grad-CAM makes model decisions transparent — critical for real-world deployment in environmental monitoring and policy decisions.
 
 ---
 
@@ -136,11 +118,11 @@ dataset_path = '/content/drive/MyDrive/satellite-project/EuroSAT'
 CS Graduate | ML Researcher | Software Engineer
 
 - 🎓 CGPA: 3.87/4.0 — Hazara University Mansehra
-- 📝 Presented ML research at HEC National Conference 2023
+- 📝 HEC National Conference — ML Research 2023
 - 🏆 IBM Machine Learning with Python — Coursera 2026
 - 💼 [LinkedIn](https://www.linkedin.com/in/muhammadfaisal39)
 - 🐙 [GitHub](https://github.com/Muhammadfaisal39)
 
 ---
 
-⭐ If you found this project useful, please give it a star!
+⭐ If you found this useful, please star the repo!
